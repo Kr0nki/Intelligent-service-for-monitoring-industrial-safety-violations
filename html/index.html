@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/stl_index.css">
+        <meta charset="UTF-8">
+        <title>Maboy</title>
+    </head>
+    <body>
+        <header class="header">
+            <a href="../html/index.html" class="logo_link">
+                <img src="../img/5370939230688845784.png" width="130" height="100" alt="Maboy — на главную" class="logo">
+            </a>
+
+            <nav class="header_nav">
+                <ul class="ul_nav">
+                    <li><a href="../html/monitor.html" aria-current="page">Монитор</a></li>
+                    <li><a href="../html/journal.html">Журнал</a></li>
+                    <li><a href="../html/settings.html">Настройки</a></li>
+                    <li><a href="../html/index.html">О проекте</a></li>
+                </ul>
+            </nav>
+
+            <div class="header_right">
+                <span class="status status_online" id="connection">
+                    <span class="status_dot"></span>
+                    <span class="status_text">Онлайн</span>
+                </span>
+                <button type="button" class="btn_alarm" id="alarm-btn">Тревога</button>
+            </div>
+        </header>
+        <script src="../js/store.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/settings.js"></script>
+    </body>
+    <main class="container">
+ 
+            <!-- HERO -->
+            <section class="hero">
+                <div class="hero_text">
+                    <span class="about"><h2>О нас</h2></span>
+                    <h1>
+                        Интеллектуальный сервис для контроля нарушений
+                        промышленной безопасности по видео с камер на российских
+                        ИИ-ускорителях <span class="accent">LinQ</span>
+                    </h1>
+                    <p>
+                        Используя возможности искусственного интеллекта и нейронных сетей,
+                        сервис анализирует видео с камер в реальном времени и сразу
+                        информирует о нарушениях. Инференс модели выполняется на российских
+                        ИИ-ускорителях LinQ.
+                    </p>
+                </div>
+
+            </section>
+ 
+            <!-- ПРОБЛЕМА / ЦЕЛЬ / ПОЛЬЗА -->
+            <section class="cards">
+                <article class="card">
+                    <div class="card_head">
+                        <span class="icon icon_red">❗</span>
+                        <h2>Проблема</h2>
+                    </div>
+                    <p>
+                        Большинство травм на промышленных объектах связано с человеческим
+                        фактором: сотрудник не надел каску, снял респиратор, зашёл в опасную
+                        зону или закурил рядом с горючими материалами. Камеры видеонаблюдения
+                        есть почти на каждом предприятии, но операторы физически не могут
+                        отслеживать десятки потоков круглосуточно, и нарушения часто замечают
+                        уже после происшествия.
+                    </p>
+                </article>
+ 
+                <article class="card">
+                    <div class="card_head">
+                        <span class="icon icon_blue">🎯</span>
+                        <h2>Наша функция</h2>
+                    </div>
+                    <p>
+                        С помощью интеллектуального сервиса, который с помощью ИИ и нейронных
+                        сетей анализирует видео с камер в реальном времени, выявляет нарушения
+                        промышленной безопасности и сразу информирует об этом.
+                    </p>
+                </article>
+ 
+                <article class="card">
+                    <div class="card_head">
+                        <span class="icon icon_green">⭐</span>
+                        <h2>Польза</h2>
+                    </div>
+                    <ul class="check_list">
+                        <li>Сохраняет жизни и здоровье работников</li>
+                        <li>Формирует культуру безопасности</li>
+                        <li>Снижает потери предприятий от аварий и простоев</li>
+                        <li>Повышает эффективность контроля на производстве</li>
+                    </ul>
+                </article>
+            </section>
+ 
+            <!-- ПРИМЕРЫ НАРУШЕНИЙ -->
+            <section class="panel">
+                <h2 class="section_title">Примеры нарушений, которые нужно распознавать</h2>
+                <div class="examples">
+ 
+                    <figure class="example">
+
+                       <div class="photo">
+                            <img src="../img/example 1.png" alt="Сотрудник без каски на производстве" loading="lazy" width="363px" height="272px">
+                            <div class="box" style="left: 30%; top: 15%; width: 30%; height: 70%;">
+                            </div>
+                       </div>
+                        <figcaption>Сотрудник не надел каску</figcaption>
+                    </figure>
+ 
+                    <figure class="example">
+                        <div class="photo">
+                            <img src="../img/example 2.png" alt="Сотрудник снял распиратор" loading="lazy" width="363px" height="272px">
+                            <div class="box" style="left: 30%; top: 15%; width: 30%; height: 70%;">
+                            </div>
+                       </div>
+                        <figcaption>Снял респиратор</figcaption>
+                    </figure>
+ 
+                    <figure class="example">
+                        <div class="photo">
+                            <img src="../img/example 3.jpg" alt="Сотрудник зашел в опасную зону" loading="lazy" width="363px" height="272px">
+                            <div class="box" style="left: 30%; top: 15%; width: 30%; height: 70%;">
+                            </div>
+                       </div>
+                        <figcaption>Зашёл в опасную зону</figcaption>
+                    </figure>
+ 
+                    <figure class="example">
+                        <div class="photo">
+                            <img src="../img/example 4.jpg" alt="Сотрудник закурил рядом с горючими материалами" loading="lazy" width="363px" height="272px">
+                            <div class="box" style="left: 30%; top: 15%; width: 30%; height: 70%;">
+                            </div>
+                       </div>
+                        <figcaption>Закурил рядом с горючими материалами</figcaption>
+                    </figure>
+ 
+                </div>
+            </section>
+ 
+            <!-- КАК ЭТО РАБОТАЕТ -->
+            <section class="panel" id="how">
+                <h2 class="section_title">Как это работает</h2>
+                <ol class="steps">
+                    <li class="step">
+                        <span class="step_icon">📹</span>
+                        <h3>Видеопоток / запись</h3>
+                        <p>Камеры предприятия (потоки RTSP / файлы)</p>
+                    </li>
+                    <li class="step">
+                        <span class="step_icon">🖼️</span>
+                        <h3>Извлечение кадров</h3>
+                        <p>Обработка и подготовка видео</p>
+                    </li>
+                    <li class="step">
+                        <span class="step_icon">🧠</span>
+                        <h3>Инференс модели</h3>
+                        <p>ИИ-ускоритель LinQ</p>
+                    </li>
+                    <li class="step">
+                        <span class="step_icon">⚙️</span>
+                        <h3>Правила и трекинг</h3>
+                        <p>Анализ, логика, определение нарушений</p>
+                    </li>
+                    <li class="step">
+                        <span class="step_icon">⚠️</span>
+                        <h3>События нарушений</h3>
+                        <p>Время, камера, тип, уверенность, кадр-доказательство</p>
+                    </li>
+                    <li class="step">
+                        <span class="step_icon">🔌</span>
+                        <h3>Backend API</h3>
+                        <p>Хранение, интеграции, уведомления</p>
+                    </li>
+                    <li class="step">
+                        <span class="step_icon">🖥️</span>
+                        <h3>Панель оператора</h3>
+                        <p>Просмотр потоков, список тревог, подтверждение</p>
+                    </li>
+                </ol>
+            </section>
+ 
+            <!-- ПРИЗЫВ К ДЕЙСТВИЮ -->
+            <section class="cta">
+                <h2>Попробуйте на своём видео</h2>
+                <p>Загрузите запись с камеры, и система отметит нарушения на кадрах.</p>
+                <a class="btn btn_primary" href="../html/monitor.html">Загрузить видео</a>
+            </section>
+ 
+            <!-- ПЛАШКА LinQ -->
+            <section class="linq">
+                <span class="linq_logo">LinQ</span>
+                <p>
+                    Инференс модели выполняется на российских ИИ-ускорителях LinQ,
+                    к которым участники получают онлайн-доступ.
+                </p>
+                <span class="linq_note">Российские технологии для безопасного будущего</span>
+            </section>
+ 
+        </main>
+ 
+ 
+</html>

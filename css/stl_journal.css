@@ -1,0 +1,278 @@
+/* Стили только страницы «Журнал». Подключается после style.css и common.css */
+
+/* ---------- СЧЁТЧИКИ ---------- */
+
+.summary{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.sum_card{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--surface);
+    border-radius: 16px;
+    padding: 16px 20px;
+    border-left: 6px solid #c9d3cd;
+}
+
+.sum_new{ border-left-color: var(--danger); }
+.sum_ok{  border-left-color: var(--green-light); }
+
+.sum_value{
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.2;
+}
+
+.sum_label{
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* ---------- ФИЛЬТРЫ ---------- */
+
+.filters{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px 16px;
+    align-items: end;
+}
+
+.field_wide{
+    grid-column: span 2;
+}
+
+.filter_actions{
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ---------- ТАБЛИЦА ЖУРНАЛА ---------- */
+
+.table_wrap{ overflow-x: auto; }
+
+.journal_table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.journal_table th{
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--muted);
+    padding: 10px 12px;
+    border-bottom: 2px solid #e0e7e1;
+    white-space: nowrap;
+}
+
+.journal_table td{
+    padding: 12px;
+    border-bottom: 1px solid #edf1ee;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.journal_table tbody tr:hover{ background-color: #f5f8f6; }
+
+.row_new{ background-color: #fdecea; }
+.row_new:hover{ background-color: #fbdedb !important; }
+
+/* полоска уверенности */
+.conf{
+    display: inline-block;
+    vertical-align: middle;
+    width: 80px;
+    height: 8px;
+    background-color: #e3e9e5;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-right: 8px;
+}
+
+.conf_bar{
+    display: block;
+    height: 100%;
+    background-color: var(--green-light);
+    border-radius: 999px;
+}
+
+.conf_low{ background-color: #f59e0b; }
+
+.conf_num{
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.frame_link{
+    color: var(--green-dark);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.frame_link:hover{ text-decoration: underline; }
+
+.actions{ display: flex; gap: 8px; }
+
+.btn_small{
+    font-size: 13px;
+    padding: 6px 14px;
+}
+
+/* ---------- ПАГИНАЦИЯ ---------- */
+
+.pagination{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 18px;
+}
+
+.page_link{
+    display: grid;
+    place-items: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    border-radius: 12px;
+    background-color: #eef3ef;
+    color: var(--green-dark);
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.page_link:hover{ background-color: #d9e8de; }
+
+.page_current{
+    background-color: var(--green);
+    color: #fff;
+}
+
+.page_current:hover{ background-color: var(--green); }
+
+.page_dots{ color: var(--muted); padding: 0 4px; }
+
+/* ---------- МОДАЛЬНОЕ ОКНО (на :target, без JS) ---------- */
+
+.modal{
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal:target{ display: flex; }
+
+.modal_bg{
+    position: absolute;
+    inset: 0;
+    background-color: rgba(10, 20, 35, 0.65);
+}
+
+.modal_card{
+    position: relative;
+    width: min(760px, 100%);
+    background-color: var(--surface);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.modal_head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.modal_head h2{
+    margin: 0;
+    font-size: 20px;
+    color: var(--navy);
+}
+
+.modal_close{
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 20px;
+    padding: 4px 8px;
+}
+
+.modal_close:hover{ color: var(--danger); }
+
+.modal_photo{
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(160deg, #26334a, #0f1722);
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: rgba(255, 255, 255, 0.65);
+    overflow: hidden;
+}
+
+.modal_photo img{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.modal_info{
+    margin: 12px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* рамка-пример внутри модалки (как на странице «Монитор») */
+.demo_box{
+    position: absolute;
+    left: 62%;
+    top: 22%;
+    width: 15%;
+    height: 56%;
+    border: 3px solid var(--danger);
+}
+
+.demo_tag{
+    position: absolute;
+    left: -3px;
+    top: -26px;
+    background-color: var(--danger);
+    color: #fff;
+    font-size: 13px;
+    padding: 3px 9px;
+    white-space: nowrap;
+    border-radius: 4px 4px 0 0;
+}
+
+/* ---------- АДАПТИВ ---------- */
+
+@media (max-width: 1000px){
+    .summary{ grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px){
+    .field_wide{ grid-column: auto; }
+    .form_box{ padding: 14px; }
+}
+
+/* ---------- СОСТОЯНИЯ, КОТОРЫМИ УПРАВЛЯЕТ JS ---------- */
+
+.page_link[aria-disabled="true"]{
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.btn_tool.btn_danger{ background-color: #fde2e0; color: var(--danger-dark); }

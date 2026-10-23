@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Журнал — Maboy</title>
+        <link rel="stylesheet" href="../css/stl_index.css">
+        <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/stl_journal.css">
+    </head>
+    <body>
+
+        <header class="header">
+            <a href="../html/index.html" class="logo_link">
+                <img src="../img/5370939230688845784.png" width="130" height="100" alt="Maboy — на главную" class="logo">
+            </a>
+
+            <nav class="header_nav">
+                <ul class="ul_nav">
+                    <li><a href="../html/monitor.html">Монитор</a></li>
+                    <li><a href="../html/journal.html" aria-current="page">Журнал</a></li>
+                    <li><a href="../html/settings.html">Настройки</a></li>
+                    <li><a href="../html/index.html">О проекте</a></li>
+                </ul>
+            </nav>
+
+            <div class="header_right">
+                <span class="status status_online" id="connection">
+                    <span class="status_dot"></span>
+                    <span class="status_text">Онлайн</span>
+                </span>
+                <button type="button" class="btn_alarm" id="alarm-btn">Тревога</button>
+            </div>
+        </header>
+
+        <main class="page">
+
+            <div class="page_head">
+                <h1>Журнал нарушений</h1>
+                <p>История всех обнаруженных нарушений. Подтверждайте или отмечайте ложные срабатывания.</p>
+            </div>
+
+            <!-- СЧЁТЧИКИ -->
+            <section class="summary">
+                <div class="sum_card">
+                    <span class="sum_value" id="sum-total">0</span>
+                    <span class="sum_label">всего за период</span>
+                </div>
+                <div class="sum_card sum_new">
+                    <span class="sum_value" id="sum-new">0</span>
+                    <span class="sum_label">новых</span>
+                </div>
+                <div class="sum_card sum_ok">
+                    <span class="sum_value" id="sum-ok">0</span>
+                    <span class="sum_label">подтверждено</span>
+                </div>
+                <div class="sum_card">
+                    <span class="sum_value" id="sum-false">0</span>
+                    <span class="sum_label">ложных</span>
+                </div>
+            </section>
+
+            <!-- ФИЛЬТРЫ -->
+            <form class="form_box filters" id="filters" action="#" method="get">
+                <div class="field field_wide">
+                    <label for="f-search">Поиск</label>
+                    <input class="input" type="search" id="f-search" placeholder="Тип, камера, номер…">
+                </div>
+
+                <div class="field">
+                    <label for="f-type">Тип нарушения</label>
+                    <select class="input" id="f-type">
+                        <option value="">Все типы</option>
+                        <option value="no_helmet">Нет каски</option>
+                        <option value="no_respirator">Снят респиратор</option>
+                        <option value="danger_zone">Опасная зона</option>
+                        <option value="smoking">Курение</option>
+                        <option value="manual">Ручная тревога</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="f-status">Статус</label>
+                    <select class="input" id="f-status">
+                        <option value="">Любой</option>
+                        <option value="new">Новое</option>
+                        <option value="ok">Подтверждено</option>
+                        <option value="false">Ложное</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="f-camera">Камера</label>
+                    <select class="input" id="f-camera">
+                        <option value="">Все камеры</option>
+                        <option value="1">Камера 1</option>
+                        <option value="2">Камера 2</option>
+                        <option value="3">Камера 3</option>
+                        <option value="manual">Вручную</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="f-from">С даты</label>
+                    <input class="input" type="date" id="f-from">
+                </div>
+
+                <div class="field">
+                    <label for="f-to">По дату</label>
+                    <input class="input" type="date" id="f-to">
+                </div>
+
+                <div class="filter_actions">
+                    <button type="submit" class="btn_tool btn_tool_main">Применить</button>
+                    <button type="reset" class="btn_tool">Сбросить</button>
+                    <button type="button" class="btn_tool" id="btn-export">⬇ Экспорт CSV</button>
+                    <button type="button" class="btn_tool btn_danger" id="btn-clear">🗑 Очистить журнал</button>
+                </div>
+            </form>
+
+            <!-- ТАБЛИЦА -->
+            <section class="form_box">
+                <div class="table_wrap">
+                    <table class="journal_table">
+                        <thead>
+                            <tr>
+                                <th scope="col">№</th>
+                                <th scope="col">Дата и время</th>
+                                <th scope="col">Камера</th>
+                                <th scope="col">Тип нарушения</th>
+                                <th scope="col">Уверенность</th>
+                                <th scope="col">Статус</th>
+                                <th scope="col">Кадр</th>
+                                <th scope="col">Действия</th>
+                            </tr>
+                        </thead>
+                        <!-- строки добавляет journal.js -->
+                        <tbody id="journal-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- ПАГИНАЦИЯ -->
+                <nav class="pagination" id="pagination" aria-label="Страницы журнала"></nav>
+            </section>
+
+        </main>
+
+        <!-- ОКНО С КАДРОМ-ДОКАЗАТЕЛЬСТВОМ: открывается по адресу #frame -->
+        <div class="modal" id="frame" role="dialog" aria-label="Кадр-доказательство">
+            <a href="#" class="modal_bg" aria-label="Закрыть"></a>
+            <div class="modal_card">
+                <div class="modal_head">
+                    <h2>Кадр-доказательство</h2>
+                    <a href="#" class="modal_close" aria-label="Закрыть">✕</a>
+                </div>
+                <!-- содержимое подставляет journal.js -->
+                <div class="modal_photo" id="modal-photo"></div>
+                <p class="modal_info" id="modal-info"></p>
+            </div>
+        </div>
+
+        <!-- Порядок важен: сначала хранилище, потом общее, потом скрипт страницы -->
+        <script src="../js/store.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/journal.js"></script>
+    </body>
+</html>

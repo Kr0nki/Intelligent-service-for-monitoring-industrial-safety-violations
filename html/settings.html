@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Настройки — Maboy</title>
+        <link rel="stylesheet" href="../css/stl_index.css">
+        <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/stl_settings.css">
+    </head>
+    <body>
+
+        <header class="header">
+            <a href="../html/index.html" class="logo_link">
+                <img src="../img/5370939230688845784.png" width="130" height="100" alt="Maboy — на главную" class="logo">
+            </a>
+
+            <nav class="header_nav">
+                <ul class="ul_nav">
+                    <li><a href="../html/monitor.html">Монитор</a></li>
+                    <li><a href="../html/journal.html">Журнал</a></li>
+                    <li><a href="../html/settings.html" aria-current="page">Настройки</a></li>
+                    <li><a href="../html/index.html">О проекте</a></li>
+                </ul>
+            </nav>
+
+            <div class="header_right">
+                <span class="status status_online" id="connection">
+                    <span class="status_dot"></span>
+                    <span class="status_text">Онлайн</span>
+                </span>
+                <button type="button" class="btn_alarm" id="alarm-btn">Тревога</button>
+            </div>
+        </header>
+
+        <main class="page">
+
+            <div class="page_head">
+                <h1>Настройки</h1>
+                <p>Подключение к серверу, чувствительность распознавания и уведомления.</p>
+            </div>
+
+            <form class="settings" id="settings-form" action="#" method="post" novalidate>
+
+                <!-- ПОДКЛЮЧЕНИЕ -->
+                <fieldset class="form_box group">
+                    <legend><h2>Подключение</h2></legend>
+
+                    <div class="field">
+                        <label for="ws-url">Адрес WebSocket бэкенда</label>
+                        <input class="input" type="text" id="ws-url" value="ws://localhost:8000/ws" spellcheck="false">
+                        <span class="hint">Сюда сервер присылает координаты рамок и события нарушений.</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="source">Источник видео</label>
+                        <select class="input" id="source">
+                            <option value="file">Видеофайл</option>
+                            <option value="rtsp">Поток камеры (по адресу)</option>
+                            <option value="webcam">Встроенная веб-камера</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="rtsp">Адрес потока</label>
+                        <input class="input" type="text" id="rtsp" placeholder="http://192.168.0.10:8080/stream.mp4" spellcheck="false">
+                        <span class="hint" id="source-hint"></span>
+                    </div>
+
+                    <div class="row_actions">
+                        <button type="button" class="btn_tool" id="test-conn">Проверить соединение</button>
+                        <span class="status" id="test-status">
+                            <span class="status_dot"></span>
+                            <span class="status_text">Не проверялось</span>
+                        </span>
+                    </div>
+                </fieldset>
+
+                <!-- РАСПОЗНАВАНИЕ -->
+                <fieldset class="form_box group">
+                    <legend><h2>Распознавание</h2></legend>
+
+                    <div class="field">
+                        <label for="conf">Порог уверенности: <output class="range_out" id="conf-out">70%</output></label>
+                        <input class="range" type="range" id="conf" min="30" max="99" value="70">
+                        <span class="hint">Нарушения с уверенностью ниже порога не показываются. Ниже порог — больше ложных срабатываний.</span>
+                    </div>
+
+                    <div class="field">
+                        <span class="field_label">Какие нарушения отслеживать</span>
+                        <div class="checks">
+                            <label class="check"><input type="checkbox" data-type="no_helmet" checked> Нет каски</label>
+                            <label class="check"><input type="checkbox" data-type="no_respirator" checked> Снят респиратор</label>
+                            <label class="check"><input type="checkbox" data-type="danger_zone" checked> Опасная зона</label>
+                            <label class="check"><input type="checkbox" data-type="smoking" checked> Курение</label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- УВЕДОМЛЕНИЯ -->
+                <fieldset class="form_box group">
+                    <legend><h2>Уведомления</h2></legend>
+
+                    <label class="toggle">
+                        <input type="checkbox" id="t-banner" checked>
+                        <span class="toggle_track"></span>
+                        <span class="toggle_text">
+                            <strong>Красная плашка при нарушении</strong>
+                            <small>Появляется сверху на любой странице</small>
+                        </span>
+                    </label>
+
+                    <label class="toggle">
+                        <input type="checkbox" id="t-sound">
+                        <span class="toggle_track"></span>
+                        <span class="toggle_text">
+                            <strong>Звуковой сигнал</strong>
+                            <small>Браузер включит звук только после первого клика по странице</small>
+                        </span>
+                    </label>
+
+                    <div class="field">
+                        <label for="volume">Громкость сигнала: <output class="range_out" id="volume-out">60%</output></label>
+                        <input class="range" type="range" id="volume" min="0" max="100" value="60">
+                    </div>
+                </fieldset>
+
+                <!-- ИНТЕРФЕЙС -->
+                <fieldset class="form_box group">
+                    <legend><h2>Интерфейс</h2></legend>
+
+                    <label class="toggle">
+                        <input type="checkbox" id="t-labels" checked>
+                        <span class="toggle_track"></span>
+                        <span class="toggle_text">
+                            <strong>Подписи на рамках</strong>
+                            <small>Тип нарушения и уверенность над рамкой</small>
+                        </span>
+                    </label>
+
+                    <div class="field">
+                        <label for="border">Толщина рамки</label>
+                        <select class="input" id="border">
+                            <option value="2">Тонкая (2 px)</option>
+                            <option value="3" selected>Обычная (3 px)</option>
+                            <option value="5">Толстая (5 px)</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="per-page">Строк в журнале на странице</label>
+                        <select class="input" id="per-page">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                </fieldset>
+
+                <!-- КНОПКИ -->
+                <div class="form_actions">
+                    <button type="submit" class="btn_tool btn_tool_main">Сохранить</button>
+                    <button type="reset" class="btn_tool">Сбросить</button>
+                    <button type="button" class="btn_tool btn_danger" id="test-alarm">🔔 Тестовая тревога</button>
+                </div>
+
+            </form>
+
+        </main>
+
+        <!-- Порядок важен: сначала хранилище, потом общее, потом скрипт страницы -->
+        <script src="../js/store.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/settings.js"></script>
+    </body>
+</html>

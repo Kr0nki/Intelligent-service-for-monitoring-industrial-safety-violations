@@ -1,0 +1,340 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+body{
+    font-family: 'Rubik';
+    background-color: #e0e7e1;
+    margin: 0;
+}
+
+header{
+    position: sticky;
+    background-color: #c8dfcc;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    top:0;
+    z-index: 100;
+}
+
+ul{
+
+    list-style: none;
+}
+
+.ul_nav{
+    display: flex;
+    gap: 54px;
+}
+.logo{
+    margin-left: 12px;
+    margin-right: 100px;
+}
+.ul_nav a{
+    display: block;
+    background-color: #1F8F3F;
+    border-radius: 19px;
+    padding: 7px 16px;
+    text-decoration: none;
+    color: #ddebe3;
+    transition: box-shadow 0.3s, background-color 0.3s, transform 0.3s;
+}
+.ul_nav a:hover,
+.ul_nav a:focus-visible{
+    background-color: #40bc65;
+    box-shadow: 0 0 10px #37c562, 0 0 25px rgba(47, 180, 87, 0.6);
+    transform: translateY(-4px);
+}
+
+
+.hero{
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items: center;
+    background: linear-gradient(135deg, var(--navy), var(--navy-2));
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 36px;
+}
+ 
+.badge{
+    display: inline-block;
+    background-color: #8fe3ff;
+    color: var(--navy);
+    font-weight: 500;
+    font-size: 14px;
+    padding: 4px 14px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+ 
+.hero h1{
+    font-size: clamp(24px, 3.2vw, 36px);
+    line-height: 1.2;
+    margin-bottom: 16px;
+    color:#1F8F3F
+}
+.hero h2{
+    color: #1F8F3F
+}
+ 
+.accent{ color: #4fd1ff; }
+ 
+.hero p{
+    color: #a7b1c4;
+    max-width: 620px;
+    margin-bottom: 24px;
+}
+ 
+.hero_actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+ 
+/* заглушка фото в hero */
+.hero_visual{
+    position: relative;
+    min-height: 280px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, #3a4a63, #1d2838);
+    overflow: hidden;
+}
+ 
+.photo_label{
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+}
+ 
+.det{
+    position: absolute;
+    border: 3px solid;
+    border-radius: 4px;
+}
+ 
+.det_tag{
+    position: absolute;
+    left: -3px;
+    top: -26px;
+    padding: 2px 8px;
+    font-size: 12px;
+    color: #fff;
+    white-space: nowrap;
+    border-radius: 4px 4px 0 0;
+}
+ 
+.det_ok{
+    left: 14%;
+    top: 24%;
+    width: 36%;
+    height: 56%;
+    border-color: #2fb457;
+}
+.det_ok .det_tag{ background-color: #2fb457; }
+ 
+.det_bad{
+    left: 56%;
+    top: 34%;
+    width: 30%;
+    height: 50%;
+    border-color: var(--danger);
+}
+.det_bad .det_tag{ background-color: var(--danger); }
+ 
+/* ---------- КАРТОЧКИ ---------- */
+ 
+.cards{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+ 
+.card{
+    background-color: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+}
+ 
+.card_head{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+ 
+.card h2{
+    font-size: 22px;
+    color: var(--navy);
+}
+ 
+.card p{
+    color: #33433b;
+    font-size: 15px;
+}
+ 
+.icon{
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.icon_red{ background-color: #fde2e0; }
+.icon_blue{ background-color: #dbe8ff; }
+.icon_green{ background-color: #d6f3de; }
+ 
+.check_list li{
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+ 
+.check_list li::before{
+    content: "✔";
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-weight: 700;
+}
+ 
+/* ---------- ПРИМЕРЫ НАРУШЕНИЙ ---------- */
+ 
+.examples{
+    margin-left: 4px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+ 
+.example{ margin: 0; }
+ 
+.photo{
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(160deg, #b9c3bd, #8e9b94);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+ 
+.photo .photo_label{
+    color: rgba(0, 0, 0, 0.45);
+}
+ 
+
+ 
+.example figcaption{
+    font-size: 18px;
+    color: #cd1e07;
+}
+ 
+/* ---------- КАК ЭТО РАБОТАЕТ ---------- */
+ 
+.steps{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 22px;
+}
+ 
+.step{
+    position: relative;
+    background-color: var(--surface);
+    border-radius: 14px;
+    padding: 16px 10px;
+    text-align: center;
+}
+ 
+.step_icon{
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    margin: 0 auto 10px;
+    border-radius: 12px;
+    background-color: #e3f1e8;
+    font-size: 22px;
+}
+ 
+.step h3{
+    font-size: 14px;
+    color: var(--navy);
+    margin-bottom: 6px;
+}
+ 
+.step p{
+    font-size: 12px;
+    color: var(--muted);
+}
+ 
+/* стрелки между шагами */
+.step:not(:last-child)::after{
+    content: "→";
+    position: absolute;
+    right: -19px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--green);
+    font-size: 18px;
+}
+ 
+/* ---------- ПРИЗЫВ К ДЕЙСТВИЮ ---------- */
+ 
+.cta{
+    text-align: center;
+    background-color: var(--surface);
+    border-radius: var(--radius);
+    padding: 36px 20px;
+}
+ 
+.cta h2{
+    font-size: 24px;
+    color: #1F8F3F;
+    margin-bottom: 8px;
+    text-decoration: none;
+}
+ 
+.cta p{
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+.cta a{
+    color: #1F8F3F;
+    text-decoration: none;
+}
+/* ---------- ПЛАШКА LinQ ---------- */
+ 
+.linq{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px 28px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-2));
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 24px 32px;
+}
+ 
+.linq_logo{
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color : #4fd1ff
+}
+ 
+.linq p{
+    flex: 1 1 260px;
+    color:  #a7b1c4;;
+}
+ 
+.linq_note{
+    max-width: 200px;
+    font-size: 13px;
+    color: #4fd1ff;
+}

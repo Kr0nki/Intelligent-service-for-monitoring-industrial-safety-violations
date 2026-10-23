@@ -1,0 +1,309 @@
+
+
+:root{
+    --green: #1F8F3F;
+    --green-light: #2FB457;
+    --green-dark: #14532D;
+    --navy: #0f2547;
+    --danger: #d93025;
+    --danger-dark: #a82219;
+    --surface: #ffffff;
+    --muted: #5a6b62;
+}
+
+/* ---------- ШАПКА: закрепление и правая часть ---------- */
+
+.header{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 10px;
+}
+
+.logo_link{ display: block; }
+
+.header_right{
+    margin-left: auto;          /* прижимает блок к правому краю */
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-right: 24px;
+}
+
+/* индикатор связи */
+.status{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.status_dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #9aa5a0;
+}
+
+.status_online .status_dot{
+    background-color: var(--green-light);
+    box-shadow: 0 0 0 4px rgba(47, 180, 87, 0.2);
+}
+
+.status_offline .status_dot{
+    background-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(217, 48, 37, 0.2);
+}
+
+/* кнопка «Тревога» */
+.btn_alarm{
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--danger);
+    border: none;
+    border-radius: 19px;
+    padding: 9px 26px;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.3s, transform 0.2s;
+}
+
+.btn_alarm:hover,
+.btn_alarm:focus-visible{
+    background-color: var(--danger-dark);
+    box-shadow: 0 0 10px var(--danger), 0 0 25px rgba(217, 48, 37, 0.55);
+    transform: translateY(-2px);
+}
+
+
+/* ---------- ПЛАШКА ТРЕВОГИ ---------- */
+
+.alert_banner{
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background-color: var(--danger);
+    color: #fff;
+    padding: 12px 24px;
+    font-size: 16px;
+}
+
+.alert_banner[hidden]{ display: none; }
+
+.alert_close{
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+
+/* ---------- КНОПКИ ---------- */
+
+.toolbar{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0;
+}
+
+.btn_tool{
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--green-dark);
+    background-color: #e3f1e8;
+    border: none;
+    border-radius: 19px;
+    padding: 9px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.3s;
+}
+
+.btn_tool:hover,
+.btn_tool:focus-visible{
+    background-color: #cfe8d8;
+    box-shadow: 0 0 10px rgba(47, 180, 87, 0.5);
+}
+
+.btn_tool_main{
+    background-color: var(--green);
+    color: #fff;
+}
+
+.btn_tool_main:hover,
+.btn_tool_main:focus-visible{
+    background-color: var(--green-light);
+}
+
+
+/* ---------- ОБЩИЕ БЛОКИ СТРАНИЦ ---------- */
+
+.page{
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page_head h1{
+    font-size: 28px;
+    color: var(--navy);
+    margin: 0 0 4px;
+}
+
+.page_head p{
+    color: var(--muted);
+    margin: 0;
+}
+
+.form_box{
+    background-color: var(--surface);
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.form_box h2{
+    font-size: 20px;
+    color: var(--navy);
+    margin: 0 0 14px;
+}
+
+.btn_danger{
+    background-color: #fde2e0;
+    color: var(--danger-dark);
+}
+
+.btn_danger:hover,
+.btn_danger:focus-visible{
+    background-color: #fbcfcb;
+    box-shadow: 0 0 10px rgba(217, 48, 37, 0.4);
+}
+
+/* поля ввода */
+.field{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field label,
+.field_label{
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--navy);
+}
+
+.input{
+    font-family: inherit;
+    font-size: 15px;
+    color: #1d2b24;
+    background-color: #fff;
+    border: 2px solid #d5ddd8;
+    border-radius: 12px;
+    padding: 9px 14px;
+    min-width: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus{
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 4px rgba(47, 180, 87, 0.2);
+}
+
+/* бейджи статусов */
+.badge_status{
+    display: inline-block;
+    font-size: 13px;
+    padding: 3px 12px;
+    border-radius: 999px;
+}
+
+.badge_new{   background-color: #fde2e0; color: var(--danger-dark); }
+.badge_ok{    background-color: #d6f3de; color: var(--green-dark); }
+.badge_false{ background-color: #e6e9e7; color: #5d6762; }
+
+
+/* ---------- СОСТОЯНИЯ СВЯЗИ ---------- */
+
+.status_wait .status_dot{
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2);
+}
+
+.status_demo .status_dot{
+    background-color: #f59e0b;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.25);
+}
+
+.status_demo .status_text{ color: #9a5b00; font-weight: 500; }
+
+/* ---------- СЧЁТЧИК НОВЫХ НА КНОПКЕ «ЖУРНАЛ» ---------- */
+
+.ul_nav a{ position: relative; }
+
+.nav_badge{
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background-color: var(--danger);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: 0 0 0 2px #fff;
+}
+
+.nav_badge[hidden]{ display: none; }
+
+/* ---------- ВСПЛЫВАЮЩЕЕ СООБЩЕНИЕ ---------- */
+
+.toast{
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    z-index: 300;
+    max-width: min(560px, calc(100vw - 32px));
+    padding: 12px 22px;
+    border-radius: 14px;
+    background-color: var(--navy);
+    color: #fff;
+    font-size: 15px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transform: translate(-50%, 16px);
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+}
+
+.toast_show{
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* пустая строка таблицы */
+.empty_cell{
+    text-align: center;
+    color: var(--muted);
+    padding: 28px 10px !important;
+}
+
+@media (max-width: 1000px){
+    .header_right{ margin-left: 0; padding: 0 16px 10px; width: 100%; }
+}

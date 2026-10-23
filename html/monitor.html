@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Монитор — Maboy</title>
+        <link rel="stylesheet" href="../css/stl_index.css">
+        <link rel="stylesheet" href="../css/common.css">
+        <link rel="stylesheet" href="../css/stl_monitor.css">
+    </head>
+    <script src="../js/store.js"></script>
+    <script src="../js/common.js"></script>
+    <body>
+
+        <!-- ШАПКА (одинаковая на всех страницах; на каждой странице
+             aria_current="page" только у своей ссылки) -->
+        <header class="header">
+            <a href="../html/index.html" class="logo_link">
+                <img src="../img/5370939230688845784.png" width="130" height="100" alt="Maboy — на главную" class="logo">
+            </a>
+
+            <nav class="header_nav">
+                <ul class="ul_nav">
+                    <li><a href="../html/monitor.html" aria-current="page">Монитор</a></li>
+                    <li><a href="../html/journal.html">Журнал</a></li>
+                    <li><a href="../html/settings.html">Настройки</a></li>
+                    <li><a href="../html/index.html">О проекте</a></li>
+                </ul>
+            </nav>
+
+            <div class="header_right">
+                <span class="status status_online" id="connection">
+                    <span class="status_dot"></span>
+                    <span class="status_text">Онлайн</span>
+                </span>
+                <button type="button" class="btn_alarm" id="alarm-btn">Тревога</button>
+            </div>
+        </header>
+
+        <main class="monitor">
+
+            <!-- ЛЕВАЯ ЧАСТЬ: видео -->
+            <section class="video_panel">
+                <div class="panel_head">
+                    <h1>Камера 1 — цех сборки</h1>
+                    <span class="live_badge">● LIVE</span>
+                </div>
+
+                <!-- video и canvas лежат друг на друге -->
+                <div class="video_box">
+                    <video id="video" class="video" controls muted playsinline></video>
+                    <canvas id="overlay" class="overlay"></canvas>
+
+                    <!-- Заглушка: исчезнет, когда подключим видео -->
+                    <div class="video_placeholder">
+                        <span class="placeholder_icon">📹</span>
+                        <p>Выберите видеофайл или подключите поток</p>
+                    </div>
+
+                    <!-- Пример красной рамки (потом её нарисует canvas) -->
+                    <div class="demo_box">
+                        <span class="demo_tag">Нет каски · 91%</span>
+                    </div>
+                </div>
+
+                <div class="toolbar">
+                    <label class="btn_tool btn_tool_main" id="source-btn">
+                        <span id="source-label">Выбрать видео</span>
+                        <input type="file" id="file-input" accept="video/*" hidden>
+                    </label>
+                    <button type="button" class="btn_tool" id="play-btn">▶ Старт</button>
+                    <button type="button" class="btn_tool" id="pause-btn">⏸ Пауза</button>
+                    <button type="button" class="btn_tool" id="sound-btn">🔔 Звук: выкл</button>
+                    <button type="button" class="btn_tool" id="demo-btn">🧪 Демо: вкл</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat_value" id="stat-today">0</span>
+                        <span class="stat_label">нарушений сегодня</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat_value" id="stat-new">0</span>
+                        <span class="stat_label">новых</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat_value" id="stat-fps">—</span>
+                        <span class="stat_label">кадров/с</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ПРАВАЯ ЧАСТЬ: таблица нарушений -->
+            <aside class="log_panel">
+                <div class="panel_head">
+                    <h2>Последние нарушения</h2>
+                    <a href="journal.html" class="link_all">Весь журнал →</a>
+                </div>
+
+                <div class="table_wrap">
+                    <table class="log_table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Время</th>
+                                <th scope="col">Тип</th>
+                                <th scope="col">Статус</th>
+                            </tr>
+                        </thead>
+                        <!-- строки добавляет monitor.js -->
+                        <tbody id="log-body"></tbody>
+                    </table>
+                </div>
+            </aside>
+
+        </main>
+
+        <!-- Порядок важен: сначала хранилище, потом общее, потом скрипт страницы -->
+        <script src="../js/store.js"></script>
+        <script src="../js/common.js"></script>
+        <script src="../js/monitor.js"></script>
+    </body>
+</html>

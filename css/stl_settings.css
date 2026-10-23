@@ -1,0 +1,165 @@
+/* Стили только страницы «Настройки». Подключается после style.css и common.css */
+
+.settings{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
+/* fieldset по умолчанию имеет рамку и странные отступы — сбрасываем */
+.group{
+    border: none;
+    margin: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.group legend{
+    float: left;          /* чтобы заголовок вёл себя как обычный блок внутри карточки */
+    width: 100%;
+    padding: 0;
+}
+
+.group legend h2{ margin: 0; }
+
+.group legend + *{ clear: both; }
+
+.hint{
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.row_actions{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+/* ---------- ПОЛЗУНОК ---------- */
+
+.range{
+    width: 100%;
+    accent-color: var(--green);
+    cursor: pointer;
+}
+
+.range_out{
+    font-weight: 600;
+    color: var(--green-dark);
+}
+
+/* ---------- ЧЕКБОКСЫ ---------- */
+
+.checks{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.check{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #eef3ef;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.check input{
+    width: 18px;
+    height: 18px;
+    accent-color: var(--green);
+}
+
+/* ---------- ПЕРЕКЛЮЧАТЕЛИ (на чистом CSS) ---------- */
+
+.toggle{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+}
+
+/* сам чекбокс прячем, но он остаётся доступным с клавиатуры */
+.toggle input{
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.toggle_track{
+    position: relative;
+    flex-shrink: 0;
+    width: 48px;
+    height: 28px;
+    border-radius: 999px;
+    background-color: #c3ccc7;
+    transition: background-color 0.25s;
+}
+
+.toggle_track::after{
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.25s;
+}
+
+.toggle input:checked + .toggle_track{
+    background-color: var(--green);
+}
+
+.toggle input:checked + .toggle_track::after{
+    transform: translateX(20px);
+}
+
+.toggle input:focus-visible + .toggle_track{
+    box-shadow: 0 0 0 4px rgba(47, 180, 87, 0.35);
+}
+
+.toggle_text{
+    display: flex;
+    flex-direction: column;
+}
+
+.toggle_text strong{
+    font-weight: 500;
+    color: var(--navy);
+}
+
+.toggle_text small{
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* ---------- КНОПКИ ФОРМЫ ---------- */
+
+.form_actions{
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* ---------- АДАПТИВ ---------- */
+
+@media (max-width: 1000px){
+    .settings{ grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px){
+    .checks{ grid-template-columns: 1fr; }
+    .form_box{ padding: 14px; }
+}

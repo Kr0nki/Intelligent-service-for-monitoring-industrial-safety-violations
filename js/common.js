@@ -6,7 +6,20 @@
      • всплывающие подсказки (toast)
    Подключается ПОСЛЕ store.js и ДО скрипта страницы.
 
-   ─── Что должен присылать бэкенд по WebSocket (JSON) ───────────────
+   ─── Протокол бэкенда (main.py, адрес ws://…/ws/stream) ────────────
+   Страница «Монитор» САМА шлёт серверу JPEG-кадры из видео (бинарные сообщения),
+   сервер на каждый кадр отвечает:
+      { "detections": [ { "violation": "no_helmet",
+                          "bbox": [x, y, w, h],     // пиксели кадра, x и y — левый верхний угол
+                          "conf": 0.9 } ],
+        "latency_ms": 42.1 }
+   Камер может быть до 9. Перед каждым кадром страница шлёт текстовое сообщение {"camera": N},
+   а в ответ сервер добавляет "camera": N. Сервер без этой поддержки тоже работает (камера = последняя отправленная).
+   Размер отправленного кадра известен странице, поэтому координаты пересчитываются сами.
+   Одно и то же нарушение пишется в журнал не чаще, чем раз в «паузу» из настроек,
+   а рамки рисуются на каждом ответе.
+
+   ─── Запасной формат: сервер сам присылает события (JSON) ───────────
    1) Нарушение (попадает в журнал, включает тревогу):
       {
         "event": "violation",
@@ -189,6 +202,8 @@
     function normType(t) {
         if (store.TYPES[t]) { return t; }
         var low = String(t || '').toLowerCase();
+        // любые названия класса «падение» из модели (fall, falling, fallen, person_fall, …) → fall
+        if (low.indexOf('fall') !== -1 || low.indexOf('падени') !== -1) { return 'fall'; }
         var found = null;
         Object.keys(store.TYPES).forEach(function (k) {
             if (store.TYPES[k].toLowerCase() === low) { found = k; }
@@ -212,6 +227,14 @@
         return c > 1 ? c / 100 : c;
     }
 
+    // подходит ли обнаружение под настройки (включённые типы и порог уверенности)
+    function passes(type, conf) {
+        if (type === 'manual') { return true; }
+        var s = store.getSettings();
+        if (type in s.types && !s.types[type]) { return false; }   // тип отключён в настройках
+        return conf * 100 >= s.threshold;                            // ниже порога — не показываем
+    }
+
     /**
      * Зарегистрировать нарушение: проверить настройки (порог, включённые типы),
      * записать в журнал, включить тревогу, сообщить монитору (нарисовать рамку).
@@ -219,14 +242,9 @@
      */
     NS.report = function (raw, opts) {
         opts = opts || {};
-        var s = store.getSettings();
         var type = normType(raw.type);
         var conf = normConf(raw.confidence);
-
-        if (type !== 'manual') {
-            if (type in s.types && !s.types[type]) { return null; }   // тип отключён в настройках
-            if (conf * 100 < s.threshold) { return null; }            // ниже порога уверенности
-        }
+        if (!passes(type, conf)) { return null; }
 
         var ts = new Date(raw.ts);
         var v = {
@@ -236,7 +254,8 @@
             confidence: conf,
             bbox:       raw.bbox ? normBBox(raw.bbox, raw.frame_w, raw.frame_h) : null,
             frame:      null,
-            ar:         null
+            ar:         null,
+            videoTime:  raw.videoTime
         };
 
         if (raw.image) {
@@ -246,8 +265,11 @@
             v.frame = raw.frame;
             v.ar = raw.ar || null;
         } else if (NS.frameProvider) {
-            var f = NS.frameProvider();     // страница «Монитор» делает снимок кадра видео
-            if (f) { v.frame = f.frame; v.ar = f.ar; }
+            var f = NS.frameProvider(v.camera);     // страница «Монитор» делает снимок кадра видео нужной камеры
+            if (f) {
+                v.frame = f.frame; v.ar = f.ar;
+                if (v.videoTime === undefined) { v.videoTime = f.t; }
+            }
         }
 
         var res = store.addViolation(v);   // дубль из другой вкладки в журнал не пишется, но тревогу показываем
@@ -281,8 +303,53 @@
         window.dispatchEvent(new CustomEvent('maboy:conn', { detail: { ws: conn.wsState, state: st } }));
     }
 
+    // Размер последнего отправленного кадра (его ставит страница «Монитор»): bbox приходит в пикселях этого кадра.
+    // cam и t — номер камеры и секунда видео для кадра, который сейчас ждёт ответа сервера.
+    NS.streamMeta = { w: 0, h: 0, cam: 1, t: null };
+    var lastLogged = {};   // когда последний раз записали нарушение такого типа (для паузы между повторами)
+
+    function handleDetections(m) {
+        var s = store.getSettings();
+        var fw = m.frame_w || NS.streamMeta.w;
+        var fh = m.frame_h || NS.streamMeta.h;
+        var now = Date.now();
+        var boxes = [];
+        var cam = (m.camera !== undefined && m.camera !== null) ? Number(m.camera) : NS.streamMeta.cam;
+        var videoTime = (cam === NS.streamMeta.cam) ? NS.streamMeta.t : undefined;
+
+        m.detections.forEach(function (d) {
+            if (!d) { return; }
+            var type = normType(d.violation !== undefined ? d.violation : d.type);
+            var conf = normConf(d.conf !== undefined ? d.conf : d.confidence);
+            var bb = normBBox(d.bbox, fw, fh);
+            if (!bb || !passes(type, conf)) { return; }
+
+            boxes.push({
+                x: bb[0], y: bb[1], w: bb[2], h: bb[3],
+                label: store.typeLabel(type) + ' · ' + Math.round(conf * 100) + '%'
+            });
+
+            // в журнал и на тревогу — не чаще, чем раз в «паузу», иначе каждый кадр дал бы новую запись
+            var camera = d.camera !== undefined ? d.camera : cam;
+            var key = type + '|' + camera;
+            if (now - (lastLogged[key] || 0) >= s.cooldown * 1000) {
+                lastLogged[key] = now;
+                NS.report({ type: type, camera: camera, confidence: conf, bbox: bb, videoTime: videoTime });
+            }
+        });
+
+        window.dispatchEvent(new CustomEvent('maboy:boxes', { detail: { boxes: boxes, camera: cam } }));
+    }
+
     function handleMessage(m) {
         if (!m || typeof m !== 'object') { return; }
+
+        // ответ потокового бэкенда на отправленный кадр
+        if (Array.isArray(m.detections) || m.error) {
+            window.dispatchEvent(new CustomEvent('maboy:ack', { detail: { latency: m.latency_ms, error: m.error, camera: m.camera } }));
+            if (Array.isArray(m.detections)) { handleDetections(m); }
+            return;
+        }
 
         // рамки на кадре — только рисуем
         if (m.event === 'frame' || (m.boxes && !m.violations)) {
@@ -293,7 +360,7 @@
                 if (label && b.confidence !== undefined) { label += ' · ' + Math.round(normConf(b.confidence) * 100) + '%'; }
                 return { x: bb[0], y: bb[1], w: bb[2], h: bb[3], label: label };
             }).filter(Boolean);
-            window.dispatchEvent(new CustomEvent('maboy:boxes', { detail: { boxes: boxes } }));
+            window.dispatchEvent(new CustomEvent('maboy:boxes', { detail: { boxes: boxes, camera: m.camera !== undefined ? Number(m.camera) : 1 } }));
             return;
         }
 
@@ -354,7 +421,12 @@
             conn.demo = on;
             renderConn();
         },
-        reconnect: function () { conn.retry = 0; connect(); }
+        reconnect: function () { conn.retry = 0; connect(); },
+        // отправить данные серверу (кадр); false — если связи нет или сервер не успевает принимать
+        send: function (data) {
+            if (!conn.ws || conn.wsState !== 'online' || conn.ws.bufferedAmount > 2000000) { return false; }
+            try { conn.ws.send(data); return true; } catch (e) { return false; }
+        }
     };
 
     /* ---------- счётчик новых на кнопке «Журнал» ---------- */
@@ -367,6 +439,47 @@
         b.textContent = n > 99 ? '99+' : String(n);
         b.hidden = (n === 0);
     }
+
+    /* ---------- RTSP-камеры: обращение к бэкенду ---------- */
+    // Браузер не играет rtsp://. Бэкенд (rtsp_stream.py) читает камеру сам и отдаёт MJPEG-поток,
+    // который показывает обычный <img>. Адрес бэкенда берём из адреса WebSocket: ws://host:8000/ws/stream -> http://host:8000
+
+    NS.isRtsp = function (src) { return /^rtsps?:\/\//i.test(String(src || '').trim()); };
+
+    // wsUrl необязателен: «Настройки» передают сюда значение из формы, ещё не сохранённое
+    NS.apiBase = function (wsUrl) {
+        var ws = String(wsUrl !== undefined ? wsUrl : store.getSettings().wsUrl || '').trim();
+        if (!/^wss?:\/\//i.test(ws)) { return ''; }
+        return ws.replace(/^ws/i, 'http').replace(/^(https?:\/\/[^\/?#]+).*$/i, '$1');
+    };
+
+    function api(method, path, body, wsUrl) {
+        var base = NS.apiBase(wsUrl);
+        if (!base) { return Promise.reject(new Error('Не задан адрес сервера (ws://…) в «Настройках»')); }
+        var opts = { method: method };
+        if (body) { opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(body); }
+        return fetch(base + path, opts).then(function (res) {
+            return res.json().catch(function () { return {}; }).then(function (data) {
+                if (!res.ok) {
+                    var err = new Error(typeof data.detail === 'string' ? data.detail : 'Ошибка сервера ' + res.status);
+                    err.status = res.status;
+                    throw err;
+                }
+                return data;
+            });
+        }, function () {
+            throw new Error('Нет связи с сервером ' + base);
+        });
+    }
+
+    NS.rtsp = {
+        // запомнить адрес камеры на сервере -> { id, stream, status }
+        register: function (url) { return api('POST', '/rtsp/register', { url: url }); },
+        // подключиться и прочитать один кадр -> { ok, width, height, error }
+        test: function (url, wsUrl) { return api('POST', '/rtsp/test', { url: url }, wsUrl); },
+        // есть ли сигнал -> { online, ... }; ошибка со status 404 — сервер не знает камеру (перезапускался)
+        status: function (id) { return api('GET', '/rtsp/status/' + encodeURIComponent(id)); }
+    };
 
     /* ---------- запуск ---------- */
     ready(function () {

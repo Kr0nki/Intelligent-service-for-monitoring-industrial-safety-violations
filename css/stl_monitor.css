@@ -114,7 +114,7 @@
 
 .stats{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
 }
 
@@ -186,7 +186,7 @@
 }
 
 @media (max-width: 560px){
-    .stats{ grid-template-columns: 1fr; }
+    .stats{ grid-template-columns: repeat(2, 1fr); }
     .video_panel,
     .log_panel{ padding: 14px; }
 }
@@ -200,4 +200,148 @@
 .btn_tool.is_on{
     background-color: #fff3d6;
     color: #8a5300;
+}
+
+
+/* ---------- ПЛАШКИ «№ КАМЕРЫ» ---------- */
+
+.cam_bar{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.cam_chip{
+    position: relative;
+    min-width: 44px;
+    padding: 8px 14px;
+    border: 2px solid #d5ded7;
+    border-radius: 12px;
+    background-color: #fff;
+    color: var(--navy);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color .15s, border-color .15s;
+}
+
+.cam_chip:hover{ border-color: var(--green-dark); }
+
+.cam_chip[aria-pressed="true"]{
+    background-color: var(--green-dark);
+    border-color: var(--green-dark);
+    color: #fff;
+}
+
+/* красная точка: на этой камере недавно было нарушение */
+.cam_chip.has_alert::after{
+    content: "";
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--danger);
+    border: 2px solid #fff;
+    animation: cam_pulse 1s infinite;
+}
+
+.cam_chip_all{ padding-left: 16px; padding-right: 16px; }
+
+
+/* ---------- СЕТКА КАМЕР ---------- */
+
+.cam_grid{
+    --cols: 3;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+    position: relative;
+}
+
+.cam_tile{
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background-color: #0f1722;
+    border: 3px solid transparent;
+    cursor: pointer;
+    outline: none;
+}
+
+.cam_tile:focus-visible{ border-color: var(--green-dark); }
+.cam_tile.is_active{ border-color: #7fc79a; }
+
+/* на камере только что было нарушение */
+.cam_tile.is_alert{
+    border-color: var(--danger);
+    animation: cam_pulse 1s infinite;
+}
+
+.cam_stage{
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(160deg, #26334a, #0f1722);
+}
+
+.cam_stage .video_placeholder{ gap: 6px; font-size: 14px; text-align: center; padding: 8px; }
+.cam_stage .placeholder_icon{ font-size: 30px; }
+
+/* кнопка выбора видео прямо в пустой плитке (сама плитка при этом не «кликается») */
+.tile_pick{
+    pointer-events: auto;
+    padding: 6px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.tile_pick:hover{ background: rgba(255, 255, 255, 0.28); }
+
+.cam_label{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: #fff;
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.cam_name{ font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cam_state{ opacity: 0.85; white-space: nowrap; }
+.cam_state.is_live{ color: #ff8a80; opacity: 1; }
+
+/* режим «одна камера на весь экран»: остальные плитки убраны за край, но продолжают проигрываться и анализироваться */
+.cam_grid.is_focus{ grid-template-columns: minmax(0, 1fr); }
+.cam_grid.is_focus .cam_tile{ cursor: default; }
+.cam_tile.is_off{
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    width: 320px;
+    pointer-events: none;
+}
+
+@keyframes cam_pulse{
+    0%, 100%{ opacity: 1; }
+    50%{ opacity: 0.55; }
+}
+
+/* строка таблицы, по которой можно перейти к камере */
+.log_table tbody tr.row_jump{ cursor: pointer; }
+
+@media (max-width: 560px){
+    .cam_grid{ --cols: 2 !important; }
+    .cam_grid.is_focus{ --cols: 1 !important; }
 }

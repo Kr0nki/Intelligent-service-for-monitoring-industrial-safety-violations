@@ -52,7 +52,37 @@
         return store.sorted().filter(function (v) { return matches(v, f); });
     }
 
+    /* ---------- список камер в фильтре ---------- */
+
+    function fillCameraFilter() {
+        var sel = $('f-camera');
+        var current = sel.value;
+        Array.prototype.slice.call(sel.options).forEach(function (o) {
+            if (o.value && o.value !== 'manual') { sel.removeChild(o); }
+        });
+        var manual = sel.querySelector('option[value="manual"]');
+        var ids = {};
+        store.cameraList().forEach(function (c) { ids[c.id] = c.name; });
+        store.getViolations().forEach(function (v) {   // камеры из старых записей тоже должны быть в списке
+            if (v.camera !== null && v.camera !== undefined && !ids[v.camera]) { ids[v.camera] = 'Камера ' + v.camera; }
+        });
+        Object.keys(ids).map(Number).sort(function (a, b) { return a - b; }).forEach(function (id) {
+            var name = ids[id];
+            var label = (name === 'Камера ' + id) ? name : id + ' — ' + name;
+            sel.insertBefore(h('option', { value: String(id), text: label }), manual);
+        });
+        sel.value = current;
+    }
+
     /* ---------- таблица ---------- */
+
+    // Ссылка на Монитор: нужная камера на весь экран, видео перемотано на момент нарушения
+    function momentHref(v) {
+        if (v.camera === null || v.camera === undefined) { return null; }
+        var href = 'monitor.html?cam=' + v.camera;
+        if (v.videoTime !== null && v.videoTime !== undefined) { href += '&t=' + v.videoTime; }
+        return href;
+    }
 
     function confidenceCell(v) {
         if (v.type === 'manual') { return h('td', { text: '—' }); }
@@ -84,7 +114,10 @@
             h('td', { text: store.typeLabel(v.type) }),
             confidenceCell(v),
             h('td', null, [h('span', { class: 'badge_status badge_' + v.status, text: store.STATUSES[v.status] })]),
-            h('td', null, [h('a', { href: '#frame', class: 'frame_link', 'data-id': v.id, text: 'Открыть' })]),
+            h('td', { class: 'frame_cell' }, [
+                h('a', { href: '#frame', class: 'frame_link', 'data-id': v.id, text: 'Открыть' }),
+                momentHref(v) ? h('a', { href: momentHref(v), class: 'moment_link', title: 'Открыть камеру на Мониторе и перемотать видео на этот момент', text: '▶ К моменту' }) : null
+            ]),
             h('td', { class: 'actions' }, actionButtons(v))
         ]);
     }
@@ -274,8 +307,9 @@
     form.addEventListener('reset', function () { setTimeout(onFiltersChanged, 0); });
 
     // новые нарушения, смена статуса, изменение настроек (в том числе в другой вкладке)
-    window.addEventListener('maboy:change', render);
+    window.addEventListener('maboy:change', function () { fillCameraFilter(); render(); });
 
     if (location.hash === '#frame') { location.hash = ''; }   // после обновления страницы окно пустое — закрываем
+    fillCameraFilter();
     render();
 })();

@@ -12,7 +12,7 @@
 
         <header class="header">
             <a href="../html/index.html" class="logo_link">
-                <img src="../img/5370939230688845784.png" width="130" height="100" alt="Maboy — на главную" class="logo">
+                <img src="../img/5370939230688845784.png" width="130" height="100" alt="На главную" class="logo">
             </a>
 
             <nav class="header_nav">
@@ -72,9 +72,7 @@
                     <select class="input" id="f-type">
                         <option value="">Все типы</option>
                         <option value="no_helmet">Нет каски</option>
-                        <option value="no_respirator">Снят респиратор</option>
-                        <option value="danger_zone">Опасная зона</option>
-                        <option value="smoking">Курение</option>
+                        <option value="fall">Падение</option>
                         <option value="manual">Ручная тревога</option>
                     </select>
                 </div>
@@ -93,9 +91,7 @@
                     <label for="f-camera">Камера</label>
                     <select class="input" id="f-camera">
                         <option value="">Все камеры</option>
-                        <option value="1">Камера 1</option>
-                        <option value="2">Камера 2</option>
-                        <option value="3">Камера 3</option>
+                        <!-- номера камер добавляет journal.js по настройкам -->
                         <option value="manual">Вручную</option>
                     </select>
                 </div>
@@ -159,7 +155,6 @@
             </div>
         </div>
 
-        <!-- Порядок важен: сначала хранилище, потом общее, потом скрипт страницы -->
         <script src="../js/store.js"></script>
         <script src="../js/common.js"></script>
         <script src="../js/journal.js"></script>

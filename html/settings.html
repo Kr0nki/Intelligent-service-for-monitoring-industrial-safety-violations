@@ -12,7 +12,7 @@
 
         <header class="header">
             <a href="../html/index.html" class="logo_link">
-                <img src="../img/5370939230688845784.png" width="130" height="100" alt="Maboy — на главную" class="logo">
+                <img src="../img/5370939230688845784.png" width="130" height="100" alt="На главную" class="logo">
             </a>
 
             <nav class="header_nav">
@@ -48,23 +48,32 @@
 
                     <div class="field">
                         <label for="ws-url">Адрес WebSocket бэкенда</label>
-                        <input class="input" type="text" id="ws-url" value="ws://localhost:8000/ws" spellcheck="false">
+                        <input class="input" type="text" id="ws-url" value="ws://localhost:8000/ws/stream" spellcheck="false">
                         <span class="hint">Сюда сервер присылает координаты рамок и события нарушений.</span>
                     </div>
 
                     <div class="field">
-                        <label for="source">Источник видео</label>
-                        <select class="input" id="source">
-                            <option value="file">Видеофайл</option>
-                            <option value="rtsp">Поток камеры (по адресу)</option>
-                            <option value="webcam">Встроенная веб-камера</option>
+                        <label for="cam-count">Сколько камер показывать</label>
+                        <select class="input" id="cam-count">
+                            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                            <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                            <option value="7">7</option><option value="8">8</option><option value="9" selected>9</option>
                         </select>
+                        <span class="hint">На «Мониторе» камеры показываются сеткой: 1 — один экран, 2–4 — 2×2, 5–9 — 3×3.</span>
                     </div>
 
                     <div class="field">
-                        <label for="rtsp">Адрес потока</label>
-                        <input class="input" type="text" id="rtsp" placeholder="http://192.168.0.10:8080/stream.mp4" spellcheck="false">
-                        <span class="hint" id="source-hint"></span>
+                        <span class="field_label">Камеры</span>
+                        <div class="cam_rows" id="cam-rows"></div>
+                        <span class="hint">Название и адрес видео. Адрес — <code>rtsp://логин:пароль@IP:554/поток</code> (IP-камера предприятия; поток читает бэкенд, на сервере должна быть сеть до камеры), http(s)-ссылка или путь к файлу рядом с сайтом (например, <code>video/cam1.mp4</code>). Адрес можно не указывать: видео для камеры загружается на «Мониторе» кнопкой «Выбрать видео».</span>
+                    </div>
+
+                    <div class="row_actions">
+                        <button type="button" class="btn_tool" id="test-rtsp">Проверить RTSP-камеры</button>
+                        <span class="status" id="rtsp-status">
+                            <span class="status_dot"></span>
+                            <span class="status_text">Не проверялось</span>
+                        </span>
                     </div>
 
                     <div class="row_actions">
@@ -82,17 +91,21 @@
 
                     <div class="field">
                         <label for="conf">Порог уверенности: <output class="range_out" id="conf-out">70%</output></label>
-                        <input class="range" type="range" id="conf" min="30" max="99" value="70">
+                        <input class="range" type="range" id="conf" min="5" max="99" value="70">
                         <span class="hint">Нарушения с уверенностью ниже порога не показываются. Ниже порог — больше ложных срабатываний.</span>
+                    </div>
+
+                    <div class="field">
+                        <label for="cooldown">Пауза между повторами: <output class="range_out" id="cooldown-out">5 с</output></label>
+                        <input class="range" type="range" id="cooldown" min="0" max="30" value="5">
+                        <span class="hint">Пока человек стоит в кадре без каски, ИИ видит нарушение на каждом кадре. В журнал оно попадёт не чаще, чем раз в это время.</span>
                     </div>
 
                     <div class="field">
                         <span class="field_label">Какие нарушения отслеживать</span>
                         <div class="checks">
                             <label class="check"><input type="checkbox" data-type="no_helmet" checked> Нет каски</label>
-                            <label class="check"><input type="checkbox" data-type="no_respirator" checked> Снят респиратор</label>
-                            <label class="check"><input type="checkbox" data-type="danger_zone" checked> Опасная зона</label>
-                            <label class="check"><input type="checkbox" data-type="smoking" checked> Курение</label>
+                            <label class="check"><input type="checkbox" data-type="fall" checked> Падение</label>
                         </div>
                     </div>
                 </fieldset>
@@ -168,7 +181,6 @@
 
         </main>
 
-        <!-- Порядок важен: сначала хранилище, потом общее, потом скрипт страницы -->
         <script src="../js/store.js"></script>
         <script src="../js/common.js"></script>
         <script src="../js/settings.js"></script>

@@ -3,20 +3,16 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Монитор — Maboy</title>
+        <title>Монитор</title>
         <link rel="stylesheet" href="../css/stl_index.css">
         <link rel="stylesheet" href="../css/common.css">
         <link rel="stylesheet" href="../css/stl_monitor.css">
     </head>
-    <script src="../js/store.js"></script>
-    <script src="../js/common.js"></script>
     <body>
 
-        <!-- ШАПКА (одинаковая на всех страницах; на каждой странице
-             aria_current="page" только у своей ссылки) -->
         <header class="header">
             <a href="../html/index.html" class="logo_link">
-                <img src="../img/5370939230688845784.png" width="130" height="100" alt="Maboy — на главную" class="logo">
+                <img src="../img/5370939230688845784.png" width="130" height="100" alt="На главную" class="logo">
             </a>
 
             <nav class="header_nav">
@@ -39,35 +35,27 @@
 
         <main class="monitor">
 
-            <!-- ЛЕВАЯ ЧАСТЬ: видео -->
+            <!-- ЛЕВАЯ ЧАСТЬ: камеры -->
             <section class="video_panel">
                 <div class="panel_head">
-                    <h1>Камера 1 — цех сборки</h1>
-                    <span class="live_badge">● LIVE</span>
+                    <h1 id="view-title">Все камеры</h1>
+                    <span class="live_badge" id="live-badge">Нет сигнала</span>
                 </div>
 
-                <!-- video и canvas лежат друг на друге -->
-                <div class="video_box">
-                    <video id="video" class="video" controls muted playsinline></video>
-                    <canvas id="overlay" class="overlay"></canvas>
+                <!-- Плашки «№ камеры»: кнопки добавляет monitor.js -->
+                <div class="cam_bar" id="cam-bar" role="group" aria-label="Выбор камеры"></div>
 
-                    <!-- Заглушка: исчезнет, когда подключим видео -->
-                    <div class="video_placeholder">
-                        <span class="placeholder_icon">📹</span>
-                        <p>Выберите видеофайл или подключите поток</p>
-                    </div>
-
-                    <!-- Пример красной рамки (потом её нарисует canvas) -->
-                    <div class="demo_box">
-                        <span class="demo_tag">Нет каски · 91%</span>
-                    </div>
-                </div>
+                <!-- Сетка камер: плитки добавляет monitor.js. Клик по плитке — камера на весь экран -->
+                <div class="cam_grid" id="cam-grid"></div>
 
                 <div class="toolbar">
                     <label class="btn_tool btn_tool_main" id="source-btn">
                         <span id="source-label">Выбрать видео</span>
                         <input type="file" id="file-input" accept="video/*" hidden>
                     </label>
+                    <button type="button" class="btn_tool" id="webcam-btn">📷 Веб-камера</button>
+                    <button type="button" class="btn_tool" id="clear-btn" title="Убрать загруженное видео у выбранной камеры">✖ Убрать видео</button>
+                    <button type="button" class="btn_tool" id="back-btn" hidden>⬅ Все камеры</button>
                     <button type="button" class="btn_tool" id="play-btn">▶ Старт</button>
                     <button type="button" class="btn_tool" id="pause-btn">⏸ Пауза</button>
                     <button type="button" class="btn_tool" id="sound-btn">🔔 Звук: выкл</button>
@@ -85,7 +73,11 @@
                     </div>
                     <div class="stat">
                         <span class="stat_value" id="stat-fps">—</span>
-                        <span class="stat_label">кадров/с</span>
+                        <span class="stat_label">кадров/с (выбранная камера)</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat_value" id="stat-latency">—</span>
+                        <span class="stat_label">мс ответ ИИ</span>
                     </div>
                 </div>
             </section>
@@ -94,7 +86,7 @@
             <aside class="log_panel">
                 <div class="panel_head">
                     <h2>Последние нарушения</h2>
-                    <a href="journal.html" class="link_all">Весь журнал →</a>
+                    <a href="../html/journal.html" class="link_all">Весь журнал →</a>
                 </div>
 
                 <div class="table_wrap">
@@ -102,6 +94,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">Время</th>
+                                <th scope="col">Камера</th>
                                 <th scope="col">Тип</th>
                                 <th scope="col">Статус</th>
                             </tr>
@@ -114,7 +107,6 @@
 
         </main>
 
-        <!-- Порядок важен: сначала хранилище, потом общее, потом скрипт страницы -->
         <script src="../js/store.js"></script>
         <script src="../js/common.js"></script>
         <script src="../js/monitor.js"></script>

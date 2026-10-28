@@ -23,7 +23,7 @@
 .logo_link{ display: block; }
 
 .header_right{
-    margin-left: auto;          /* прижимает блок к правому краю */
+    margin-left: auto;          
     display: flex;
     align-items: center;
     gap: 18px;

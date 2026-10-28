@@ -13,11 +13,17 @@
     var KEY_SEQ  = 'maboy.seq';
     var KEY_SEED = 'maboy.seeded';
 
+    var MAX_CAMERAS = 9;   // сколько камер максимум (сетка 3×3)
     var MAX_ITEMS  = 500;  // сколько записей хранить в журнале
     var MAX_FRAMES = 30;   // у скольких последних записей хранить кадр (они тяжёлые)
 
+    // Виды нарушений, которые сейчас распознаёт система. Остальные подписи оставлены,
+    // чтобы старые записи журнала и будущие типы отображались нормально.
+    var ACTIVE_TYPES = ['no_helmet', 'fall'];
+
     var TYPES = {
         no_helmet:     'Нет каски',
+        fall:          'Падение',
         no_respirator: 'Снят респиратор',
         danger_zone:   'Опасная зона',
         smoking:       'Курение',
@@ -31,17 +37,20 @@
     };
 
     var DEFAULTS = {
-        wsUrl:     'ws://localhost:8000/ws',
+        wsUrl:     'ws://localhost:8000/ws/stream',
         source:    'file',      // file | rtsp | webcam
         rtsp:      '',
         threshold: 70,          // порог уверенности, %
-        types:     { no_helmet: true, no_respirator: true, danger_zone: true, smoking: true },
+        types:     { no_helmet: true, fall: true },
         banner:    true,        // красная плашка
         sound:     false,       // звуковой сигнал
         volume:    60,
         labels:    true,        // подписи на рамках
         border:    3,           // толщина рамки, px
-        perPage:   20           // строк в журнале
+        perPage:   20,          // строк в журнале
+        cooldown:  5,           // пауза, сек: одно и то же нарушение в журнал не чаще
+        camCount:  9,           // сколько камер показывать на Мониторе (1..9)
+        cameras:   []           // [{ name, src }] — название и адрес видео для каждой камеры
     };
 
     /* ---------- работа с localStorage (не падаем, если он недоступен) ---------- */
@@ -105,7 +114,21 @@
         s.volume    = Number(s.volume);
         s.border    = Number(s.border);
         s.perPage   = Number(s.perPage);
+        s.cooldown  = Number(s.cooldown);
+        s.camCount  = Math.max(1, Math.min(MAX_CAMERAS, Math.round(Number(s.camCount)) || DEFAULTS.camCount));
+        if (!Array.isArray(s.cameras)) { s.cameras = []; }
         return s;
+    }
+
+    // Список камер для Монитора и Журнала: [{ id: 1, name: 'Камера 1', src: '' }, ...]
+    function cameraList(s) {
+        s = s || getSettings();
+        var out = [];
+        for (var i = 1; i <= s.camCount; i++) {
+            var c = s.cameras[i - 1] || {};
+            out.push({ id: i, name: String(c.name || '').trim() || ('Камера ' + i), src: String(c.src || '').trim() });
+        }
+        return out;
     }
 
     function saveSettings(patch) {
@@ -195,7 +218,9 @@
             status:     'new',
             bbox:       v.bbox || null,   // [x, y, w, h] в долях кадра (0..1)
             frame:      v.frame || null,  // JPEG в виде data:-ссылки
-            ar:         v.ar || null      // соотношение сторон кадра
+            ar:         v.ar || null,     // соотношение сторон кадра
+            // секунда видео, на которой замечено нарушение (по ней журнал перематывает Монитор)
+            videoTime:  (v.videoTime === null || v.videoTime === undefined || isNaN(Number(v.videoTime))) ? null : Math.round(Number(v.videoTime) * 10) / 10
         };
 
         if (rec.type !== 'manual') {
@@ -255,7 +280,7 @@
         } catch (e) { return; }
 
         if (getViolations().length === 0) {
-            var keys = ['no_helmet', 'no_respirator', 'danger_zone', 'smoking'];
+            var keys = ACTIVE_TYPES;
             var t = Date.now() - 6 * 60000;
             var out = [];
 
@@ -316,7 +341,10 @@
         formatDate: formatDate,
         dayKey: dayKey,
         typeLabel: typeLabel,
-        cameraLabel: cameraLabel
+        ACTIVE_TYPES: ACTIVE_TYPES,
+        cameraLabel: cameraLabel,
+        cameraList: cameraList,
+        MAX_CAMERAS: MAX_CAMERAS
     };
 
     // Демо-записи нужны к моменту первой отрисовки страницы, поэтому сеем сразу при загрузке файла.

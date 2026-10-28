@@ -163,3 +163,28 @@
     .checks{ grid-template-columns: 1fr; }
     .form_box{ padding: 14px; }
 }
+
+
+/* ---------- СПИСОК КАМЕР ---------- */
+
+.cam_rows{ display: grid; gap: 8px; }
+
+.cam_row{
+    display: grid;
+    grid-template-columns: 28px minmax(120px, 1fr) minmax(160px, 2fr);
+    gap: 8px;
+    align-items: center;
+}
+
+.cam_row[hidden]{ display: none; }
+
+.cam_num{
+    font-weight: 600;
+    color: var(--navy);
+    text-align: center;
+}
+
+@media (max-width: 560px){
+    .cam_row{ grid-template-columns: 28px 1fr; }
+    .cam_row .input:last-child{ grid-column: 2; }
+}

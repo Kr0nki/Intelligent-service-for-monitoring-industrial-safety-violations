@@ -17,9 +17,10 @@
 
     function fill(s) {
         $('ws-url').value = s.wsUrl;
-        $('source').value = s.source;
-        $('rtsp').value = s.rtsp;
+        $('cam-count').value = String(s.camCount);
+        fillCameras(s);
         $('conf').value = s.threshold;
+        $('cooldown').value = s.cooldown;
         typeBoxes.forEach(function (cb) { cb.checked = !!s.types[cb.getAttribute('data-type')]; });
         $('t-banner').checked = !!s.banner;
         $('t-sound').checked = !!s.sound;
@@ -28,7 +29,41 @@
         $('border').value = String(s.border);
         $('per-page').value = String(s.perPage);
         syncOutputs();
-        syncSource();
+        syncCamRows();
+    }
+
+    /* ---------- камеры ---------- */
+
+    var camRows = $('cam-rows');
+    var MAX = store.MAX_CAMERAS;
+    for (var i = 1; i <= MAX; i++) {
+        camRows.appendChild(NS.h('div', { class: 'cam_row', 'data-cam': i }, [
+            NS.h('span', { class: 'cam_num', text: String(i) }),
+            NS.h('input', { class: 'input', type: 'text', 'data-role': 'name', placeholder: 'Камера ' + i, spellcheck: 'false', 'aria-label': 'Название камеры ' + i }),
+            NS.h('input', { class: 'input', type: 'text', 'data-role': 'src', placeholder: 'video/cam' + i + '.mp4 или rtsp://логин:пароль@IP:554/поток', spellcheck: 'false', 'aria-label': 'Адрес видео камеры ' + i })
+        ]));
+    }
+
+    function fillCameras(s) {
+        Array.prototype.forEach.call(camRows.children, function (row, idx) {
+            var c = s.cameras[idx] || {};
+            row.querySelector('[data-role="name"]').value = c.name || '';
+            row.querySelector('[data-role="src"]').value = c.src || '';
+        });
+    }
+
+    function readCameras() {
+        return Array.prototype.map.call(camRows.children, function (row) {
+            return {
+                name: row.querySelector('[data-role="name"]').value.trim(),
+                src:  row.querySelector('[data-role="src"]').value.trim()
+            };
+        });
+    }
+
+    function syncCamRows() {
+        var n = Number($('cam-count').value);
+        Array.prototype.forEach.call(camRows.children, function (row, idx) { row.hidden = idx >= n; });
     }
 
     function read() {
@@ -36,9 +71,10 @@
         typeBoxes.forEach(function (cb) { types[cb.getAttribute('data-type')] = cb.checked; });
         return {
             wsUrl:     $('ws-url').value.trim(),
-            source:    $('source').value,
-            rtsp:      $('rtsp').value.trim(),
+            camCount:  Number($('cam-count').value),
+            cameras:   readCameras(),
             threshold: Number($('conf').value),
+            cooldown:  Number($('cooldown').value),
             types:     types,
             banner:    $('t-banner').checked,
             sound:     $('t-sound').checked,
@@ -51,24 +87,14 @@
 
     function syncOutputs() {
         $('conf-out').textContent = $('conf').value + '%';
+        $('cooldown-out').textContent = $('cooldown').value + ' с';
         $('volume-out').textContent = $('volume').value + '%';
     }
 
-    var hints = {
-        file:   'В режиме «Видеофайл» адрес не нужен: файл выбирается на странице «Монитор».',
-        rtsp:   'Браузер не умеет играть rtsp:// напрямую. Укажите http(s)-адрес, который отдаёт бэкенд (mp4, MJPEG или HLS).',
-        webcam: 'Используется веб-камера этого компьютера, адрес не нужен.'
-    };
-
-    function syncSource() {
-        var src = $('source').value;
-        $('rtsp').disabled = (src !== 'rtsp');
-        $('source-hint').textContent = hints[src] || '';
-    }
-
     $('conf').addEventListener('input', syncOutputs);
+    $('cooldown').addEventListener('input', syncOutputs);
     $('volume').addEventListener('input', syncOutputs);
-    $('source').addEventListener('change', syncSource);
+    $('cam-count').addEventListener('change', syncCamRows);
 
     /* ---------- сохранить / сбросить ---------- */
 
@@ -81,9 +107,12 @@
             $('ws-url').focus();
             return;
         }
-        if (s.source === 'rtsp' && !s.rtsp) {
-            NS.toast('Для режима «Поток камеры» укажите адрес потока.', 4500);
-            $('rtsp').focus();
+        // rtsp:// теперь можно: поток читает бэкенд. Проверяем только, что адрес похож на rtsp://хост/…
+        var badRtsp = s.cameras.slice(0, s.camCount).findIndex(function (c) {
+            return /^rtsps?:/i.test(c.src) && !/^rtsps?:\/\/[^\s\/]+/i.test(c.src);
+        });
+        if (badRtsp >= 0) {
+            NS.toast('Камера ' + (badRtsp + 1) + ': адрес должен быть вида rtsp://логин:пароль@192.168.1.10:554/поток', 6000);
             return;
         }
 
@@ -99,11 +128,49 @@
 
     /* ---------- проверка соединения ---------- */
 
-    function setTestStatus(state, text) {
-        var el = $('test-status');
+    function setStatus(id, state, text) {
+        var el = $(id);
         el.className = 'status' + (state ? ' status_' + state : '');
         el.querySelector('.status_text').textContent = text;
     }
+
+    function setTestStatus(state, text) { setStatus('test-status', state, text); }
+
+    /* ---------- проверка RTSP-камер ---------- */
+    // Берёт адреса прямо из формы (даже несохранённые) и просит бэкенд подключиться к каждой камере и прочитать кадр.
+
+    $('test-rtsp').addEventListener('click', function () {
+        var wsUrl = $('ws-url').value.trim();
+        var n = Number($('cam-count').value);
+        var list = [];
+        readCameras().slice(0, n).forEach(function (c, i) {
+            if (NS.isRtsp(c.src)) { list.push({ num: i + 1, url: c.src }); }
+        });
+
+        if (!list.length) { setStatus('rtsp-status', 'offline', 'Нет камер с адресом rtsp://'); return; }
+        if (!NS.apiBase(wsUrl)) { setStatus('rtsp-status', 'offline', 'Сначала укажите адрес WebSocket бэкенда'); return; }
+
+        var btn = $('test-rtsp');
+        btn.disabled = true;
+        var results = [];
+        var okCount = 0;
+
+        // по очереди, чтобы не грузить сервер и показывать понятный прогресс
+        list.reduce(function (chain, cam) {
+            return chain.then(function () {
+                setStatus('rtsp-status', 'wait', 'Проверка камеры ' + cam.num + ' (' + (results.length + 1) + ' из ' + list.length + ')…');
+                return NS.rtsp.test(cam.url, wsUrl).then(function (r) {
+                    if (r.ok) { okCount++; results.push('Камера ' + cam.num + ': работает, ' + r.width + '×' + r.height); }
+                    else { results.push('Камера ' + cam.num + ': ' + (r.error || 'ошибка')); }
+                }, function (err) {
+                    results.push('Камера ' + cam.num + ': ' + err.message);
+                });
+            });
+        }, Promise.resolve()).then(function () {
+            btn.disabled = false;
+            setStatus('rtsp-status', okCount === list.length ? 'online' : 'offline', results.join(' · '));
+        });
+    });
 
     $('test-conn').addEventListener('click', function () {
         var url = $('ws-url').value.trim();

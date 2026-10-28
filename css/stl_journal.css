@@ -276,3 +276,18 @@
 }
 
 .btn_tool.btn_danger{ background-color: #fde2e0; color: var(--danger-dark); }
+
+
+/* ---------- ССЫЛКА «К МОМЕНТУ» ---------- */
+
+.frame_cell{ white-space: nowrap; }
+
+.moment_link{
+    display: inline-block;
+    margin-left: 12px;
+    color: var(--green-dark);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.moment_link:hover{ text-decoration: underline; }
